@@ -8,4 +8,4 @@ Breast cancer is a significant health concern worldwide, and early detection is 
 ![dataset-cover](https://github.com/apmejiac/6303_10_Final_Project/assets/59490510/d71e9e02-ee03-40ef-a5a2-2d3862b26572)
 
 
-_Source data:_ https://www.kaggle.com/datasets/aryashah2k/breast-ultrasound-images-dataset
+
