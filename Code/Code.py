@@ -1,4 +1,4 @@
-from Toolbox import CancerDataset
+from Toolbox import CancerDataset,EDA
 
 #Loading dataset
 path = "/home/ubuntu/Final_Project/Data/"
