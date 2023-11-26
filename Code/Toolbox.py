@@ -30,8 +30,8 @@ class CancerDataset(Dataset):
             - __len__(self): Returns the total number of images in the dataset.
             - __getitem__(self, idx): Loads and preprocesses the image and its corresponding label at the specified index.
         Return:
-            - Imag: Images
-            - Label: Labels
+            - img: Images
+            - label: Labels
     """
 
     def __init__(self, dataset_path):
