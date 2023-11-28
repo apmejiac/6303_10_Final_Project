@@ -6,12 +6,13 @@ import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 import torch
 
 #Loading dataset
 
-path = "/home/ubuntu/Final_Project/Data/"
+# path = "/home/ubuntu/Final_Project/Data/"
+path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
 cancer_dataset = CancerDataset(path)
 
 train_dataset, validation_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2)
@@ -79,6 +80,32 @@ for epoch in range(num_epochs):
     print(f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
 
 
-##Applying model to augment data
+## Applying model to augment data
 
+## Printing Metrics for the test data
+test_pred = []
+test_labels = []
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
+# Getting predictions
+with torch.no_grad():
+    for images, labels in test_loader:
+        outputs = pretrained_resnet(images)
+        _, predicted = torch.max(outputs, 1)
+        
+        test_pred.extend(predicted.cpu().numpy())
+        test_labels.extend(labels.cup().numpy())
+        
+acc = accuracy_score(test_labels, test_pred)
+precision = precision_score(test_labels, test_pred, average='weighted', zero_division=1)
+recall = recall_score(test_labels, test_pred, average='weighted')
+f1 = f1_score(test_labels, test_pred, average='weighted')
+
+print('-'*100)
+print("METRICS ON TEST DATASET")
+print(classification_report(test_labels, test_pred))
+print()
+print("CONFUSION MATRIX")
+print(confusion_matrix(test_labels, test_pred))
+print()
+print(f"Accuracy: {acc}, Precision: {precision}, Recall: {recall}, F1: {f1}")
