@@ -14,13 +14,13 @@ from tqdm import tqdm
 
 # path = "/home/ubuntu/Final_Project/Data/"
 path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
-transform = get_balanced_augmentation_transform(horizontal_flip=True,
+augment_transform = get_balanced_augmentation_transform(horizontal_flip=True,
                                                 vertical_flip=True,
                                                 rotation_angle=45,
                                                 brightness_range=0.2,
                                                 contrast_range=0.2,
                                                 saturation_range=0.2)
-cancer_dataset = CancerDataset(path, transform)
+cancer_dataset = CancerDataset(path)
 
 train_dataset, validation_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2)
 
@@ -71,6 +71,9 @@ def train_model(train_loader, validation_loader, num_epochs=10):
         with tqdm(total=len(train_loader), desc="Epoch {}".format(epoch+1)) as pbar:
         
             for images, labels in train_loader:
+                # Augmenting image
+                images = torch.stack([augment_transform(img) for img in images])
+                
                 optimizer.zero_grad()
                 outputs = model(images)
                 loss = criterion(outputs, labels)

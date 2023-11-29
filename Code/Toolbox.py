@@ -38,35 +38,43 @@ class CancerDataset(Dataset):
         self.dataset_path = dataset_path
         self.image_files, self.labels = self.load_data()
         self.transform = transform
+        
     def load_data(self):
         image_files = []
         labels = []
+        
         for class_name in ['benign', 'malignant', 'normal']:
             class_path = os.path.join(self.dataset_path, class_name)
             for filename in os.listdir(class_path):
                 image_path = os.path.join(class_path, filename)
                 image_files.append(image_path)
                 labels.append(class_name)
+                
         return image_files, labels
+    
     def __len__(self):
+        
         return len(self.image_files)
+    
     def __getitem__(self, idx):
+        
         img_path = self.image_files[idx]
         label = self.labels[idx]
+        
         # Load the image
         img = Image.open(img_path).convert('RGB')
+        
         # Tranformation to tensor
-        if self.transform:
-            transform = self.transform
-        else:
-            transform = transforms.Compose([
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-            ])
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+        ])
         img = transform(img)
+        
         # Convert labels to numerical values
         label_encoder = {'benign': 0, 'malignant': 1, 'normal': 2}
         label = label_encoder[label]
+        
         return img, label
 
     def split_dataset(self, test_size=0.3, validation_size=0.2, random_seed=42):
@@ -82,6 +90,7 @@ class CancerDataset(Dataset):
             - test_dataset (CancerDatasetSubset): Test dataset.
         """
         random.seed(random_seed)
+        
         # Split indices
         total_samples = len(self)
         test_size = int(test_size * total_samples)
@@ -90,10 +99,12 @@ class CancerDataset(Dataset):
         remaining_indices = list(set(range(total_samples)) - set(test_indices))
         validation_indices = random.sample(remaining_indices, validation_size)
         train_indices = list(set(remaining_indices) - set(validation_indices))
+        
         # Create subsets
         train_dataset = CancerDatasetSubset(self, train_indices)
         validation_dataset = CancerDatasetSubset(self, validation_indices)
         test_dataset = CancerDatasetSubset(self, test_indices)
+        
         return train_dataset, validation_dataset, test_dataset
 
 class CancerDatasetSubset(Dataset):
@@ -202,9 +213,9 @@ def get_balanced_augmentation_transform(horizontal_flip=False, vertical_flip=Fal
     if saturation_range is not None:
         augmentations.append(transforms.ColorJitter(saturation=saturation_range))
 
-    # Adding standard transforms 
-    augmentations.append(transforms.Resize((224, 224)))
-    augmentations.append(transforms.ToTensor())
+    # # Adding standard transforms 
+    # augmentations.append(transforms.Resize((224, 224)))
+    # augmentations.append(transforms.ToTensor())
     
     # Add normalization if requested
     if normalize:
