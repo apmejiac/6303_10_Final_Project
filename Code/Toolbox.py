@@ -34,9 +34,10 @@ class CancerDataset(Dataset):
             - label: Labels
     """
 
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, transform=None):
         self.dataset_path = dataset_path
         self.image_files, self.labels = self.load_data()
+        self.transform = transform
     def load_data(self):
         image_files = []
         labels = []
@@ -55,10 +56,13 @@ class CancerDataset(Dataset):
         # Load the image
         img = Image.open(img_path).convert('RGB')
         # Tranformation to tensor
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-        ])
+        if self.transform:
+            transform = self.transform
+        else:
+            transform = transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+            ])
         img = transform(img)
         # Convert labels to numerical values
         label_encoder = {'benign': 0, 'malignant': 1, 'normal': 2}
@@ -198,9 +202,12 @@ def get_balanced_augmentation_transform(horizontal_flip=False, vertical_flip=Fal
     if saturation_range is not None:
         augmentations.append(transforms.ColorJitter(saturation=saturation_range))
 
+    # Adding standard transforms 
+    augmentations.append(transforms.Resize((224, 224)))
+    augmentations.append(transforms.ToTensor())
+    
     # Add normalization if requested
     if normalize:
-        augmentations.append(transforms.ToTensor())
         augmentations.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
 
     transform = transforms.Compose(augmentations)
