@@ -1,4 +1,4 @@
-from Toolbox import CancerDataset,EDA,get_balanced_augmentation_transform,balanced_augmentation
+from Toolbox import CancerDataset, EDA, get_balanced_augmentation_transform, balanced_augmentation
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 from collections import Counter
@@ -38,6 +38,7 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 #Splitting data
 train_dataset, val_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2, random_seed=42)
 batch_size = 32
+num_epochs = 20
 
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -45,7 +46,7 @@ val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 def model_definition():
     # Defining Model
-    model = models.resnet18(pretrained=True)
+    model = models.resnet34(pretrained=True)
     model.fc = nn.Linear(model.fc.in_features, 3)
     
     # Defining Criteria
@@ -58,9 +59,10 @@ def model_definition():
     return model, optimizer, criterion
     
 # Training loop
-def train_model(train_loader, validation_loader, num_epochs=10):
+def train_model(train_loader, validation_loader, num_epochs, save_on=True):
     # Getting model
     model, optimizer, criterion = model_definition()
+    f1_best = 0
     
     # Beggining Training
     for epoch in range(num_epochs):
@@ -122,12 +124,19 @@ def train_model(train_loader, validation_loader, num_epochs=10):
         f1 = f1_score(val_labels, val_predictions, average='weighted')
 
         print(f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
-    
+
+        if save_on == True and f1 < f1_best:
+            torch.save(model.state_dict(), "trained_model.pt")
+            f1_best = f1
+            
+            print("The model has been saved and updated!")
+        
+        
     return model
 
 
 ## Applying model to augment data
-model = train_model(train_loader, validation_loader)
+model = train_model(train_loader, validation_loader, num_epochs)
 
 ## Printing Metrics for the test data
 test_pred = []
