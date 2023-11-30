@@ -19,7 +19,8 @@ augment_transform = get_balanced_augmentation_transform(horizontal_flip=True,
                                                 rotation_angle=45,
                                                 brightness_range=0.2,
                                                 contrast_range=0.2,
-                                                saturation_range=0.2)
+                                                saturation_range=0.2,
+                                                gaussian_noise=True)
 cancer_dataset = CancerDataset(path)
 
 train_dataset, validation_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2)
@@ -125,7 +126,7 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
 
         print(f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
 
-        if save_on == True and f1 < f1_best:
+        if save_on == True and f1 > f1_best:
             torch.save(model.state_dict(), "trained_model.pt")
             f1_best = f1
             

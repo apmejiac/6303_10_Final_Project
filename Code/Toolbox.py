@@ -68,6 +68,7 @@ class CancerDataset(Dataset):
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
+            transforms.Lambda(lambda x: x / 255.0) # setting scale from 0 to 1
         ])
         img = transform(img)
         
@@ -179,9 +180,21 @@ class EDA:
 
 ##Data augmentation considering unbalance data
 
+# Gaussian Noise
+class GaussianNoise(object):
+    def __init__(self, std=0.01):
+        self.std = std
+        
+    def __call__(self, tensor):
+        noise = torch.randn_like(tensor) * self.std
+        noisy_tensor = tensor + noise
+
+        noisy_tensor = torch.clamp(noisy_tensor, 0, 1)
+        return noisy_tensor
+
 def get_balanced_augmentation_transform(horizontal_flip=False, vertical_flip=False, rotation_angle=0,
                                         brightness_range=None, contrast_range=None, saturation_range=None,
-                                        normalize=False):
+                                        normalize=False, gaussian_noise=False):
     """
     Generate a composed transformation with balanced augmentation based on the specified augmentations and normalization.
 
@@ -206,12 +219,15 @@ def get_balanced_augmentation_transform(horizontal_flip=False, vertical_flip=Fal
         augmentations.append(transforms.RandomVerticalFlip())
     if rotation_angle != 0:
         augmentations.append(transforms.RandomRotation(degrees=rotation_angle))
+    if gaussian_noise is not None:
+        augmentations.append(GaussianNoise())
     if brightness_range is not None:
         augmentations.append(transforms.ColorJitter(brightness=brightness_range))
     if contrast_range is not None:
         augmentations.append(transforms.ColorJitter(contrast=contrast_range))
     if saturation_range is not None:
         augmentations.append(transforms.ColorJitter(saturation=saturation_range))
+
 
     # # Adding standard transforms 
     # augmentations.append(transforms.Resize((224, 224)))
