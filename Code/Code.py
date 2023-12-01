@@ -10,6 +10,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import torch
 from tqdm import tqdm
 
+# Loading GPU
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+    print("Using GPU")
+else:
+    device = torch.device("cpu")
+    print("GPU not available, using CPU")
+
 #Loading dataset
 
 # path = "/home/ubuntu/Final_Project/Data/"
@@ -39,7 +47,7 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 #Splitting data
 train_dataset, val_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2, random_seed=42)
 batch_size = 32
-num_epochs = 20
+num_epochs = 40
 
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -49,10 +57,13 @@ def model_definition():
     # Defining Model
     model = models.resnet34(pretrained=True)
     model.fc = nn.Linear(model.fc.in_features, 3)
+    model.to(device)
     
     # Defining Criteria
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer.to(device)
+    criterion.to(device)
 
     # # Consider using this scheduler
     # scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=0, verbose=True)
@@ -74,6 +85,9 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
         with tqdm(total=len(train_loader), desc="Epoch {}".format(epoch+1)) as pbar:
         
             for images, labels in train_loader:
+                # Loading to GPU
+                images, labels = images.to(device), labels.to(device)
+                
                 # Augmenting image
                 images = torch.stack([augment_transform(img) for img in images])
                 
