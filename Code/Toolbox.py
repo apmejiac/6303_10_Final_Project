@@ -177,12 +177,14 @@ class EDA:
             axes[i + 1].axis('off')
 
         plt.show()
+    
+    # Add something to find average and std for normalization of images
 
 ##Data augmentation considering unbalance data
 
 # Gaussian Noise
 class GaussianNoise(object):
-    def __init__(self, std=0.01):
+    def __init__(self, std=0.001):
         self.std = std
         
     def __call__(self, tensor):

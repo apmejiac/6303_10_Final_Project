@@ -17,10 +17,10 @@ path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
 augment_transform = get_balanced_augmentation_transform(horizontal_flip=True,
                                                 vertical_flip=True,
                                                 rotation_angle=45,
+                                                gaussian_noise=True,
                                                 brightness_range=0.2,
                                                 contrast_range=0.2,
-                                                saturation_range=0.2,
-                                                gaussian_noise=True)
+                                                saturation_range=0.2)
 cancer_dataset = CancerDataset(path)
 
 train_dataset, validation_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2)
