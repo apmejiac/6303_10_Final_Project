@@ -3,6 +3,7 @@ import streamlit as st
 import torch
 import io
 from PIL import Image
+from Toolbox import predict
 # from Toolbox import predict_model # -- create model prediction file
 
 # Creating different tabs for the presentation
@@ -45,10 +46,8 @@ def demo_tab():
         image = Image.open(image_upload)
         st.image(image, caption="Uploaded Image to predict", use_column_width=False)
         
-        # Use prediction function
-        
         # Placeholder prediction for now
-        prediction = "Class Label"
+        prediction = predict("trained_model.pt", image)
         
         st.write(f"Class prediction: {prediction}")
         
@@ -59,7 +58,7 @@ def main():
     tabs = ["Project Overview", "Results", "Demo"]
     current_tab = st.sidebar.radio("Select Tab", tabs)
     
-    if current_tab == "Overview":
+    if current_tab == "Project Overview":
         overview_tab()
     elif current_tab == "Results":
         metrics_tab()
