@@ -221,10 +221,10 @@ print(f"Accuracy: {acc.__round__(4)}, Precision: {precision.__round__(4)}, Recal
 
 
 
-# Assuming 'test_labels' and 'test_pred' are your actual labels and predicted labels, respectively
+#formatted confusion matrix
 cm = confusion_matrix(test_labels, test_pred)
 
-# Plotting the confusion matrix using seaborn and matplotlib
+
 plt.figure(figsize=(8, 6))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=['Class 0', 'Class 1', 'Class 2'],
             yticklabels=['Class 0', 'Class 1', 'Class 2'])
@@ -389,12 +389,10 @@ print(f"Accuracy: {acc.__round__(4)}, Precision: {precision.__round__(4)}, Recal
 
 
 
-
-
-# Assuming 'test_labels' and 'test_pred' are your actual labels and predicted labels, respectively
+#formatted confusion matrix
 cm = confusion_matrix(test_labels_o, test_pred_o)
 
-# Plotting the confusion matrix using seaborn and matplotlib
+
 plt.figure(figsize=(8, 6))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=['Class 0', 'Class 1', 'Class 2'],
             yticklabels=['Class 0', 'Class 1', 'Class 2'])
