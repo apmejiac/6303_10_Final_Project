@@ -279,6 +279,7 @@ def model_definition():
     for param in model.parameters():
         param.requires_grad = True
     model.fc = nn.Linear(model.fc.in_features, 3)
+    model.to(device)
 
     # Defining Criteria
     criterion = nn.CrossEntropyLoss()
@@ -303,7 +304,8 @@ def train_model(train_loader_o, validation_loader_o, num_epochs, save_on=True):
         with tqdm(total=len(train_loader_o), desc="Epoch {}".format(epoch + 1)) as pbar:
 
             for images, labels in train_loader_o:
-
+                images, labels = images.to(device), labels.to(device)
+                
                 # Apply data augmentation to the batch
                 augmented_batch = [augmented_dataset_o[i] for i in range(len(images))]
                 augmented_images, augmented_labels = zip(*augmented_batch)
@@ -337,6 +339,7 @@ def train_model(train_loader_o, validation_loader_o, num_epochs, save_on=True):
             # with tqdm(total=len(validation_loader), desc="Epoch {}".format(epoch)) as pbar:
 
             for images, labels in validation_loader_o:
+                images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 _, predicted = torch.max(outputs, 1)
 
@@ -377,6 +380,7 @@ test_labels_o = []
 # Getting predictions
 with torch.no_grad():
     for images, labels in test_loader_o:
+        images, labels = images.to(device), labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
 
