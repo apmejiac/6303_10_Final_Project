@@ -62,7 +62,7 @@ train_dataset, validation_dataset, test_dataset = cancer_dataset_original.split_
 # # Create DataLoader instances for training, validation, and test sets
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=custom_collate_fn)
 validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False,collate_fn=custom_collate_fn)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False,collate_fn=custom_collate_fn)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, collate_fn=custom_collate_fn)
 
 #Mean and sd for normalization
 mean = 0.0
@@ -185,11 +185,10 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
         recall = recall_score(val_labels, val_predictions, average='weighted')
         f1 = f1_score(val_labels, val_predictions, average='weighted')
 
-        print(
-            f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
+        print(f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
 
         if save_on == True and f1 > f1_best:
-            torch.save(model.state_dict(), "trained_model.pt")
+            torch.save(model, "trained_model.pt")
             f1_best = f1
 
             print("The model has been saved and updated!")
@@ -363,7 +362,7 @@ def train_model(train_loader_o, validation_loader_o, num_epochs, save_on=True):
             f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
 
         if save_on == True and f1 > f1_best:
-            torch.save(model.state_dict(), "trained_model.pt")
+            torch.save(model, "trained_model.pt")
             f1_best = f1
 
             print("The model has been saved and updated!")
