@@ -17,6 +17,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
+# Getting Device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
 np.random.seed(42)
 
 # Set random seed for Python's built-in random module
@@ -29,25 +33,25 @@ torch.backends.cudnn.deterministic = True
 
 # Loading separated and overlayed datasets
 
-path = "/home/ubuntu/DL_Proj/Data/"
-# # path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
-output_path_mask = "/home/ubuntu/DL_Proj/ImagesMask/"
-output_path_without_mask = "/home/ubuntu/DL_Proj/ImagesWithoutMask/"
-output_path_overlay = "/home/ubuntu/DL_Proj/ImagesOverlay/"
+# path = "/home/ubuntu/DL_Proj/Data/"
+path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
+output_path_mask = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data/ImagesMask/"
+output_path_without_mask = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data/ImagesWithoutMask/"
+output_path_overlay = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data/ImagesOverlay/"
 
 dataset_creator = DatasetCreator(path)
 
 #Creates dataset on virtual machine (comment it out after having them on virtual machine)
-dataset_creator.create_dataset_mask_folder(output_path_mask)
-dataset_creator.create_images_without_mask_folder(output_path_without_mask)
-overlay_images_with_masks(output_path_mask, output_path_without_mask, output_path_overlay)
+# dataset_creator.create_dataset_mask_folder(output_path_mask)
+# dataset_creator.create_images_without_mask_folder(output_path_without_mask)
+# overlay_images_with_masks(output_path_mask, output_path_without_mask, output_path_overlay)
 
 #========================================================================================================
 
 ### Complete dataset EDA
-eda_C = EDA(path)
-eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
-eda_C.plot_sample_images()
+# eda_C = EDA(path)
+# eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
+# eda_C.plot_sample_images()
 
 
 #========================================================================================================
@@ -100,7 +104,8 @@ def model_definition():
     for param in model.parameters():
         param.requires_grad = True
     model.fc = nn.Linear(model.fc.in_features, 3)
-
+    model.to(device)
+    
     # Defining Criteria
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
@@ -124,7 +129,9 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
         with tqdm(total=len(train_loader), desc="Epoch {}".format(epoch + 1)) as pbar:
 
             for images, labels in train_loader:
-
+                # Getting to GPU
+                images, labels = images.to(device), labels.to(device)
+                
                 # Apply data augmentation to the batch
                 augmented_batch = [augmented_dataset[i] for i in range(len(images))]
                 augmented_images, augmented_labels = zip(*augmented_batch)
@@ -158,6 +165,7 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
             # with tqdm(total=len(validation_loader), desc="Epoch {}".format(epoch)) as pbar:
 
             for images, labels in validation_loader:
+                images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 _, predicted = torch.max(outputs, 1)
 
@@ -198,6 +206,8 @@ test_labels = []
 # Getting predictions
 with torch.no_grad():
     for images, labels in test_loader:
+        images, labels = images.to(device), labels.to(device)
+        
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
 
