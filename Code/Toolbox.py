@@ -151,11 +151,11 @@ class CancerDataset(Dataset):
 
         # Tranformation to tensor ##### Triple check if we want to use this size or another
 
-        # transform = transforms.Compose([
-        #             transforms.Resize((224, 224)),
-        #             transforms.ToTensor(),
-        #             transforms.Lambda(lambda x: x / 255.0)  # setting scale from 0 to 1
-        #         ])
+        transform = transforms.Compose([
+                    transforms.Resize((224, 224)),
+                    transforms.ToTensor()
+                    # transforms.Lambda(lambda x: x / 255.0)  # setting scale from 0 to 1
+                ])
         #
         if self.transform:
             img = self.transform(img)
@@ -368,3 +368,32 @@ def custom_collate_fn(batch):
     images = torch.stack(images)
 
     return images, labels
+
+def predict(model_path, image):
+    # Load model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = torch.load(model_path)
+    # model.to(device)
+    
+    # Get image and preprocess
+    transform = transform = transforms.Compose([
+            transforms.Resize((224, 224)),  # Choose the desired size
+            transforms.ToTensor(),
+            # Add any other transformations you need
+    ])
+    # image = image.convert("RBG")
+    img = transform(image)
+    input_batch = img.unsqueeze(0)
+    input_batch = input_batch.to(device)
+    
+    # Making prediction
+    model.eval()
+    with torch.no_grad():
+        output = model(input_batch)
+    
+    _, predicted_idx = torch.max(output, 1)
+    
+    class_labels = ["Benign", "Malignant", "Normal"]
+    predicted_label = class_labels[predicted_idx.item()]
+    
+    return predicted_label
