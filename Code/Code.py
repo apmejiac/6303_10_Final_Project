@@ -25,10 +25,10 @@ path = "/home/ubuntu/final-project/6303_10_Final_Project_Group5/Data"
 augment_transform = get_balanced_augmentation_transform(horizontal_flip=True,
                                                 vertical_flip=True,
                                                 rotation_angle=45,
-                                                gaussian_noise=True,
-                                                brightness_range=0.2,
-                                                contrast_range=0.2,
-                                                saturation_range=0.2)
+                                                # gaussian_noise=True,
+                                                brightness_range=0.3,
+                                                contrast_range=0.3,
+                                                saturation_range=0.3)
 cancer_dataset = CancerDataset(path)
 
 train_dataset, validation_dataset, test_dataset = cancer_dataset.split_dataset(test_size=0.3, validation_size=0.2)
@@ -62,7 +62,7 @@ def model_definition():
     # Defining Criteria
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
-    optimizer.to(device)
+    # optimizer.to(device)
     criterion.to(device)
 
     # # Consider using this scheduler
@@ -119,6 +119,7 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
             # with tqdm(total=len(validation_loader), desc="Epoch {}".format(epoch)) as pbar:
                 
             for images, labels in validation_loader:
+                images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 _, predicted = torch.max(outputs, 1)
 
@@ -161,6 +162,7 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 # Getting predictions
 with torch.no_grad():
     for images, labels in test_loader:
+        images, labels = images.to(device), labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
         
