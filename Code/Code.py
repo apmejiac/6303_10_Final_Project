@@ -49,9 +49,9 @@ dataset_creator = DatasetCreator(path)
 #========================================================================================================
 
 ### Complete dataset EDA
-eda_C = EDA(path)
-eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
-eda_C.plot_sample_images()
+# eda_C = EDA(path)
+# eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
+# eda_C.plot_sample_images()
 
 
 #========================================================================================================
@@ -83,9 +83,9 @@ print(f"Calculated mean: {mean}, std: {std}")
 
 # #EDA prior augmentation-original images - Commenting out for now
 
-eda = EDA(output_path_without_mask)
-eda.plot_class_distribution(custom_title='Class distribution only images no mask')
-eda.plot_sample_images()
+# eda = EDA(output_path_without_mask)
+# eda.plot_class_distribution(custom_title='Class distribution only images no mask')
+# eda.plot_sample_images()
 
 
 # #Considering data augmentation for training dataset
@@ -414,3 +414,9 @@ plt.title('Confusion Matrix Overlayed data')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
 plt.show()
+
+# Evaluate performance on regular images with overlayed model
+# Need to make equivalent dataloader with regular images
+# for batch in test_loader_o:
+#     for item in batch:
+#         print(item)
