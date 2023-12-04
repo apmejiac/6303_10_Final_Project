@@ -231,6 +231,8 @@ class EDA:
         for i, count in enumerate(counts):
             plt.text(classes[i], count / 2, str(count), ha='center', va='center', color='black', fontweight='bold')
 
+        plt.savefig("class_distribution_plot.png")
+        
         plt.show()
     #
     def plot_sample_images(self, image_size=(224, 224)):
@@ -251,6 +253,9 @@ class EDA:
                 axes[i, j].imshow(img)
                 axes[i, j].axis('off')
                 axes[i, j].set_title(f'Class {i}')
+                
+        plt.savefig("sample_images.png")
+        
         plt.show()
 #     def plot_data_augmentation_impact(self):  # Consider including after data augmentation
 #         original_image = self.dataset[0][0]

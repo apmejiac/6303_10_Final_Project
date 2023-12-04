@@ -49,9 +49,9 @@ dataset_creator = DatasetCreator(path)
 #========================================================================================================
 
 ### Complete dataset EDA
-# eda_C = EDA(path)
-# eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
-# eda_C.plot_sample_images()
+eda_C = EDA(path)
+eda_C.plot_class_distribution(custom_title='Class distribution raw dataset')
+eda_C.plot_sample_images()
 
 
 #========================================================================================================
@@ -195,6 +195,7 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
 
     return model
 #
+
 # ## Applying model to augment data
 model = train_model(train_loader, validation_loader, num_epochs)
 # #
