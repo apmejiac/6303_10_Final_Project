@@ -139,6 +139,9 @@ class CancerDataset(Dataset):
                 # print(f"Loaded: {image_path}, Label: {class_name}")
 
         return image_files, labels
+    
+    def get_ids_and_labels(self):
+        return self.image_files, self.labels
 
     def __len__(self):
         return len(self.image_files)
@@ -375,6 +378,13 @@ def custom_collate_fn(batch):
     return images, labels
 
 def predict(model_path, image):
+    """
+    Makes a prediction of an imputed image using the trained model
+    
+    input:  model_path: path for saved model; 
+            image: previously loaded image to be predicted
+    ouput:  predicted_labl: Prediction from the model
+    """
     # Load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = torch.load(model_path)
@@ -398,7 +408,7 @@ def predict(model_path, image):
     
     _, predicted_idx = torch.max(output, 1)
     
-    class_labels = ["Benign", "Malignant", "Normal"]
+    class_labels = ["benign", "malignant", "normal"]
     predicted_label = class_labels[predicted_idx.item()]
     
     return predicted_label

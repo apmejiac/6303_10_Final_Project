@@ -1,4 +1,4 @@
-from Toolbox import DatasetCreator ,overlay_images_with_masks, CancerDataset, EDA,apply_augmentation_to_dataset, custom_collate_fn
+from Toolbox import DatasetCreator ,overlay_images_with_masks, CancerDataset, EDA,apply_augmentation_to_dataset, custom_collate_fn, predict
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 from collections import Counter
@@ -16,6 +16,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+from PIL import Image
+import pandas as pd
 
 # Getting Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -253,7 +255,8 @@ plt.show()
 #Dataset overlayed images (original + masks)
 cancer_dataset_overlayed= CancerDataset(output_path_overlay)
 train_dataset_o, validation_dataset_o, test_dataset_o = cancer_dataset_overlayed.split_dataset(test_size=0.3, validation_size=0.2)
-#
+image_ids, image_labels = test_dataset_o.get_ids_and_labels()
+
 # # Create DataLoader instances for training, validation, and test sets
 train_loader_o = DataLoader(train_dataset_o, batch_size=32, shuffle=True,collate_fn=custom_collate_fn)
 validation_loader_o = DataLoader(validation_dataset_o, batch_size=32, shuffle=False,collate_fn=custom_collate_fn)
@@ -387,6 +390,7 @@ with torch.no_grad():
         test_pred_o.extend(predicted.cpu().numpy())
         test_labels_o.extend(labels.cpu().numpy())
 
+# Metrics on Overlayed Images
 acc = accuracy_score(test_labels_o, test_pred_o)
 precision = precision_score(test_labels_o, test_pred_o, average='weighted', zero_division=1)
 recall = recall_score(test_labels_o, test_pred_o, average='weighted')
@@ -420,3 +424,23 @@ plt.show()
 # for batch in test_loader_o:
 #     for item in batch:
 #         print(item)
+
+# Get metrics on regular images
+
+cancer_dataset_overlayed= CancerDataset(output_path_without_mask)
+train_dataset_o, validation_dataset_o, test_dataset_o = cancer_dataset_overlayed.split_dataset(test_size=0.3, validation_size=0.2)
+image_ids, image_labels = test_dataset_o.get_ids_and_labels()
+
+test_image_df = pd.DataFrame({'image_id': image_ids, 'labels': image_labels})
+print(test_image_df.head())
+
+predictions = []
+for index, row in test_image_df.iterrows():
+    image = Image.open(row['image_id'])
+    pred = predict('trained_model.pt', image)
+    predictions.append(pred)
+
+test_image_df["prediction"] = predictions
+
+print(classification_report(test_image_df['labels'], test_image_df['prediction']))
+print(confusion_matrix(test_image_df['labels'], test_image_df['prediction']))

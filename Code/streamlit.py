@@ -21,6 +21,8 @@ def overview_tab():
     class_distribtion = Image.open("class_distribution_plot.png")
     st.image(class_distribtion, caption="Distribution of Classes", use_column_width=False)
     
+    st. divider()
+    
     sample_images = Image.open("sample_images.png")
     st.image(sample_images, caption = "Sample Images from Dataset")
     
