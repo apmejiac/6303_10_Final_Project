@@ -190,7 +190,7 @@ def train_model(train_loader, validation_loader, num_epochs, save_on=True):
         print(f'Validation Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}')
 
         if save_on == True and f1 > f1_best:
-            torch.save(model, "trained_model.pt")
+            torch.save(model, "trained_model_original.pt")
             f1_best = f1
 
             print("The model has been saved and updated!")
@@ -427,20 +427,20 @@ plt.show()
 
 # Get metrics on regular images
 
-cancer_dataset_overlayed= CancerDataset(output_path_without_mask)
-train_dataset_o, validation_dataset_o, test_dataset_o = cancer_dataset_overlayed.split_dataset(test_size=0.3, validation_size=0.2)
-image_ids, image_labels = test_dataset_o.get_ids_and_labels()
+# cancer_dataset_overlayed= CancerDataset(output_path_without_mask)
+# train_dataset_o, validation_dataset_o, test_dataset_o = cancer_dataset_overlayed.split_dataset(test_size=0.3, validation_size=0.2)
+# image_ids, image_labels = test_dataset_o.get_ids_and_labels()
 
-test_image_df = pd.DataFrame({'image_id': image_ids, 'labels': image_labels})
-print(test_image_df.head())
+# test_image_df = pd.DataFrame({'image_id': image_ids, 'labels': image_labels})
+# print(test_image_df.head())
 
-predictions = []
-for index, row in test_image_df.iterrows():
-    image = Image.open(row['image_id'])
-    pred = predict('trained_model.pt', image)
-    predictions.append(pred)
+# predictions = []
+# for index, row in test_image_df.iterrows():
+#     image = Image.open(row['image_id'])
+#     pred = predict('trained_model.pt', image)
+#     predictions.append(pred)
 
-test_image_df["prediction"] = predictions
+# test_image_df["prediction"] = predictions
 
-print(classification_report(test_image_df['labels'], test_image_df['prediction']))
-print(confusion_matrix(test_image_df['labels'], test_image_df['prediction']))
+# print(classification_report(test_image_df['labels'], test_image_df['prediction']))
+# print(confusion_matrix(test_image_df['labels'], test_image_df['prediction']))
