@@ -1,0 +1,1 @@
+The following codes consist of a toolbox and a code py. Run the toolbox first to be able to obtain all the function used to fetch and preprocess data and then run the code file to have access to model results and visualizations. 
